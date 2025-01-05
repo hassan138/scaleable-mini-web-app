@@ -1,15 +1,12 @@
 
-from pymongo.mongo_client import MongoClient
-from pymongo.server_api import ServerApi
+from bson import ObjectId
+from config import db
 
-uri = "mongodb+srv://hassan bilal:nanotech007@bitpic.vkyjc.mongodb.net/?retryWrites=true&w=majority&appName=bitpic"
+# Find all videos that do not have _id
+videos_without_id = db.videos.find({"_id": {"$exists": False}})
 
-# Create a new client and connect to the server
-client = MongoClient(uri, server_api=ServerApi('1'))
-
-# Send a ping to confirm a successful connection
-try:
-    client.admin.command('ping')
-    print("Pinged your deployment. You successfully connected to MongoDB!")
-except Exception as e:
-    print(e)
+# For each video, assign a new ObjectId
+for video in videos_without_id:
+    video["_id"] = ObjectId()  # Generate new ObjectId
+    db.videos.save(video)  # Save the updated document back to the database
+    print(f"Updated video with new _id: {video.get('title', 'Unknown')}")

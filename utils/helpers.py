@@ -74,15 +74,16 @@ def serialize_video(video):
             upload_date = ""  # If conversion fails, set as empty string
 
     return {
+        "id": str(video["_id"]),  # Include the video ID here
         "title": video.get("title", ""),
         "description": video.get("description", ""),
         "hashtags": video.get("hashtags", []),
         "filename": video.get("filename", "Unknown"),  # Use `.get` to avoid KeyError
-        "file_location": video.get("file_location", ""),  # Safely handle missing key
-        "creator_id": str(video["creator_id"]),  # Convert ObjectId to string
+        "file_location": video.get("file_location", ""),
+        "creator_id": str(video["creator_id"]),
         "upload_date": upload_date.isoformat() if isinstance(upload_date, datetime) else "",
-        # Convert datetime to ISO string if it's datetime object
     }
+
 
 
 def serialize_comment(comment):
