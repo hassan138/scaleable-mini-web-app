@@ -3,6 +3,8 @@ from pydantic import BaseModel, validator, root_validator
 from typing import Any, Optional
 
 from pydantic.json_schema import JsonSchemaValue
+
+
 # class PyObjectId(ObjectId):
 #     @classmethod
 #     def __get_validators__(cls):
@@ -47,6 +49,7 @@ class PyObjectId(ObjectId):
         from pydantic_core import core_schema
         return core_schema.str_schema()
 
+
 # Helper Functions
 def serialize_user(user):
     return {
@@ -56,26 +59,29 @@ def serialize_user(user):
     }
 
 
+from datetime import datetime
 
-# def serialize_video(video):
-#     return {
-#         "title": video["title"],
-#         "description": video["description"],
-#         "hashtags": video["hashtags"],
-#         "filename": video.get("filename", "Unknown"),  # Use `.get` to avoid KeyError
-#         "file_location": video["file_location"],
-#         "creator_id": video["creator_id"],
-#     }
+
 def serialize_video(video):
     # Serialize video object, converting ObjectId and datetime properly
+    upload_date = video.get("upload_date", "")
+
+    # Check if the upload_date is a string and convert it to datetime if needed
+    if isinstance(upload_date, str):
+        try:
+            upload_date = datetime.fromisoformat(upload_date)  # Try converting string to datetime
+        except ValueError:
+            upload_date = ""  # If conversion fails, set as empty string
+
     return {
-        "title": video["title"],
-        "description": video["description"],
-        "hashtags": video["hashtags"],
+        "title": video.get("title", ""),
+        "description": video.get("description", ""),
+        "hashtags": video.get("hashtags", []),
         "filename": video.get("filename", "Unknown"),  # Use `.get` to avoid KeyError
-        "file_location": video["file_location"],
+        "file_location": video.get("file_location", ""),  # Safely handle missing key
         "creator_id": str(video["creator_id"]),  # Convert ObjectId to string
-        "upload_date": video["upload_date"].isoformat(),  # Convert datetime to ISO string
+        "upload_date": upload_date.isoformat() if isinstance(upload_date, datetime) else "",
+        # Convert datetime to ISO string if it's datetime object
     }
 
 

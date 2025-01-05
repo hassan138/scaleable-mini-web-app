@@ -49,7 +49,7 @@ async def upload_video(
         "hashtags": hashtags.split(),
         "filename": file.filename,  # Ensure filename is included
         "url": video_url,
-        "file_location": video_url,
+        "file_location": video_url,  # Ensure file_location is included
         "creator_id": ObjectId(creator_id),
         "upload_date": datetime.utcnow(),  # Use datetime object directly
     }
