@@ -11,6 +11,7 @@ class User(BaseModel):
     username: str
     hashed_password: str
     is_creator: bool
+    is_admin:bool
 
     class Config:
         allow_population_by_field_name = True
