@@ -188,8 +188,38 @@ async def creator_dashboard(creator_id: str):
     return dashboard_data
 
 
-@router.get("/users/creators")
-async def get_all_creators(skip: int = 0, limit: int = 10):
-    # Get users who are creators
-    creators = db.users.find({"is_creator": True}).skip(skip).limit(limit)
-    return [serialize_user(creator) for creator in creators]
+@router.delete("/users/{user_id}")
+async def delete_user(user_id: str, token: str = Depends(oauth2_scheme)):
+    try:
+        # Decode the token and get the username
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        username: str = payload.get("sub")
+
+        # Ensure the username exists in the token payload
+        if username is None:
+            raise HTTPException(status_code=401, detail="Invalid token")
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="Token has expired")
+    except jwt.PyJWTError:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
+    # Retrieve the user making the request
+    admin_user = get_user(username)
+    if admin_user is None:
+        raise HTTPException(status_code=404, detail="Admin user not found")
+
+    # Check if the user making the request has admin privileges
+    if not admin_user.is_admin:
+        raise HTTPException(status_code=403, detail="You do not have permission to delete users")
+
+    # Fetch the user to be deleted
+    user_to_delete = db.users.find_one({"_id": ObjectId(user_id)})
+    if not user_to_delete:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    # Proceed to delete the user
+    db.users.delete_one({"_id": ObjectId(user_id)})
+
+    return {"detail": f"User with ID {user_id} has been deleted successfully"}
+
+

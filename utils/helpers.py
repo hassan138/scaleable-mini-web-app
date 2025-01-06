@@ -1,4 +1,5 @@
 from bson import ObjectId
+from fastapi import HTTPException
 from pydantic import BaseModel, validator, root_validator
 from typing import Any, Optional
 from bson import ObjectId
@@ -72,19 +73,43 @@ def serialize_video(video):
     }
 
 
+# def serialize_comment(comment):
+#     if not isinstance(comment, dict):
+#         raise ValueError(f"Expected a dictionary, got {type(comment)}")
+#
+#     # Fetch user data from the database using user_id from the comment
+#     user = db.users.find_one({"_id": ObjectId(comment["user_id"])})  # Find the user based on user_id
+#     username = user["username"] if user else "Unknown"  # Default to "Unknown" if user is not found
+#
+#     return {
+#         "id": str(comment.get("_id", "")),
+#         "content": comment.get("content", ""),
+#         "video_id": str(comment["video_id"]) if isinstance(comment["video_id"], ObjectId) else comment["video_id"],
+#         "user_id": str(comment["user_id"]) if isinstance(comment["user_id"], ObjectId) else comment["user_id"],
+#         "username": username,
+#         "timestamp": comment.get("timestamp", ""),
+#     }
+import logging
+
+logging.basicConfig(level=logging.DEBUG)
+
 def serialize_comment(comment):
-    if not isinstance(comment, dict):
-        raise ValueError(f"Expected a dictionary, got {type(comment)}")
+    logging.debug(f"Serializing comment: {comment}")
+    user_id = comment.get("user_id", "")
+    if ObjectId.is_valid(user_id):
+        user = db.users.find_one({"_id": ObjectId(user_id)})
+    else:
+        logging.error(f"Invalid user_id: {user_id}")
+        user = None
 
-    # Fetch user data from the database using user_id from the comment
-    user = db.users.find_one({"_id": ObjectId(comment["user_id"])})  # Find the user based on user_id
-    username = user["username"] if user else "Unknown"  # Default to "Unknown" if user is not found
-
+    username = user["username"] if user else "Unknown"
     return {
         "id": str(comment.get("_id", "")),
         "content": comment.get("content", ""),
         "video_id": str(comment["video_id"]) if isinstance(comment["video_id"], ObjectId) else comment["video_id"],
-        "user_id": str(comment["user_id"]) if isinstance(comment["user_id"], ObjectId) else comment["user_id"],
+        "user_id": str(user_id),
         "username": username,
         "timestamp": comment.get("timestamp", ""),
     }
+
+
