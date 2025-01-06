@@ -1,6 +1,7 @@
 from bson import ObjectId
 from pydantic import BaseModel, validator, root_validator
 from typing import Any, Optional
+from bson import ObjectId
 
 from pydantic.json_schema import JsonSchemaValue
 
@@ -87,10 +88,13 @@ def serialize_video(video):
 
 
 def serialize_comment(comment):
+    if not isinstance(comment, dict):
+        raise ValueError(f"Expected a dictionary, got {type(comment)}")
+
     return {
-        "id": str(comment["_id"]),
-        "content": comment["content"],
-        "video_id": str(comment["video_id"]),
-        "user_id": str(comment["user_id"]),
-        "timestamp": comment["timestamp"],
+        "id": str(comment.get("_id", "")),
+        "content": comment.get("content", ""),
+        "video_id": str(comment["video_id"]) if isinstance(comment["video_id"], ObjectId) else comment["video_id"],
+        "user_id": str(comment["user_id"]) if isinstance(comment["user_id"], ObjectId) else comment["user_id"],
+        "timestamp": comment.get("timestamp", ""),
     }
