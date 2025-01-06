@@ -67,6 +67,7 @@ def serialize_video(video):
         "file_location": video.get("file_location", ""),
         "creator_id": str(video["creator_id"]),
         "upload_date": upload_date.isoformat() if isinstance(upload_date, datetime) else "",
+        "comment_count": video.get("comment_count", 0),  # Include comment count
     }
 
 

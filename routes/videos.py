@@ -110,11 +110,47 @@ async def comment_on_video(video_id: str, content: str = Form(...), user_id: str
 #     return [serialize_video(video) for video in videos]
 
 
+# @router.get("/videos/creator/{creator_id}")
+# async def get_creator_videos(creator_id: str):
+#     videos = db.videos.find({"creator_id": ObjectId(creator_id)})
+#     return [serialize_video(video) for video in videos]
 @router.get("/videos/creator/{creator_id}")
 async def get_creator_videos(creator_id: str):
-    videos = db.videos.find({"creator_id": ObjectId(creator_id)})
-    return [serialize_video(video) for video in videos]
+    try:
+        # Ensure the creator_id is valid
+        if not ObjectId.is_valid(creator_id):
+            raise HTTPException(status_code=400, detail="Invalid creator_id")
 
+        # Use MongoDB aggregation to fetch videos and comment counts
+        pipeline = [
+            {"$match": {"creator_id": ObjectId(creator_id)}},  # Match videos by creator_id
+            {
+                "$lookup": {  # Join with the comments collection
+                    "from": "comments",
+                    "localField": "_id",  # Match video "_id" with "video_id" in comments
+                    "foreignField": "video_id",
+                    "as": "comments",
+                }
+            },
+            {
+                "$addFields": {  # Add a field for comment count
+                    "comment_count": {"$size": "$comments"}
+                }
+            },
+            {
+                "$project": {  # Exclude the comments array from the output
+                    "comments": 0
+                }
+            }
+        ]
+
+        videos = list(db.videos.aggregate(pipeline))
+
+        # Serialize the response
+        response = [serialize_video(video) for video in videos]
+        return response
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @router.put("/video/{video_id}")
 async def update_video(
