@@ -2,25 +2,9 @@ from bson import ObjectId
 from pydantic import BaseModel, validator, root_validator
 from typing import Any, Optional
 from bson import ObjectId
-
+from config import db
 from pydantic.json_schema import JsonSchemaValue
 
-
-# class PyObjectId(ObjectId):
-#     @classmethod
-#     def __get_validators__(cls):
-#         yield cls.validate
-#
-#     @classmethod
-#     def validate(cls, v: Any, field: Optional["ModelField"] = None):
-#         if not ObjectId.is_valid(v):
-#             raise ValueError("Invalid ObjectId")
-#         return ObjectId(v)
-#
-#     @classmethod
-#     def __get_pydantic_json_schema__(cls, field_schema):
-#         field_schema.update(type="string")
-#         return field_schema
 
 class PyObjectId(ObjectId):
     @classmethod
@@ -86,15 +70,19 @@ def serialize_video(video):
     }
 
 
-
 def serialize_comment(comment):
     if not isinstance(comment, dict):
         raise ValueError(f"Expected a dictionary, got {type(comment)}")
+
+    # Fetch user data from the database using user_id from the comment
+    user = db.users.find_one({"_id": ObjectId(comment["user_id"])})  # Find the user based on user_id
+    username = user["username"] if user else "Unknown"  # Default to "Unknown" if user is not found
 
     return {
         "id": str(comment.get("_id", "")),
         "content": comment.get("content", ""),
         "video_id": str(comment["video_id"]) if isinstance(comment["video_id"], ObjectId) else comment["video_id"],
         "user_id": str(comment["user_id"]) if isinstance(comment["user_id"], ObjectId) else comment["user_id"],
+        "username": username,
         "timestamp": comment.get("timestamp", ""),
     }

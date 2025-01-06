@@ -186,3 +186,10 @@ async def creator_dashboard(creator_id: str):
         })
 
     return dashboard_data
+
+
+@router.get("users/creators")
+async def get_all_creators(skip: int = 0, limit: int = 10):
+    # Get users who are creators
+    creators = db.users.find({"is_creator": True}).skip(skip).limit(limit)
+    return [serialize_user(creator) for creator in creators]

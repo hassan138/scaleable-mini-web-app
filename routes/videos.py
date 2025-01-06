@@ -17,6 +17,7 @@ cloudinary.config(
 # Router initialization
 router = APIRouter()
 
+
 # Dependency for role-based access
 def is_creator(creator_id: str):
     creator = db.users.find_one({"_id": ObjectId(creator_id), "is_creator": True})
@@ -60,6 +61,7 @@ async def upload_video(
 
     # Return serialized video data
     return serialize_video(video)
+
 
 @router.get("/videos")
 async def list_videos(skip: int = 0, limit: int = 10):
@@ -213,3 +215,9 @@ async def get_video_comments(video_id: str):
     comments = [serialize_comment(comment) for comment in comments_cursor]
 
     return comments
+
+
+@router.get("/videos/search")
+async def search_videos(query: str, skip: int = 0, limit: int = 10):
+    videos = db.videos.find({"$text": {"$search": query}}).skip(skip).limit(limit)
+    return [serialize_video(video) for video in videos]

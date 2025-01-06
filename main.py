@@ -23,39 +23,3 @@ app.add_middleware(
 )
 app.include_router(auth_router, prefix="", tags=["Authentication"])
 app.include_router(video_router, prefix="", tags=["Videos"])
-
-
-#
-# @app.get("/", response_class=HTMLResponse, name="home")
-# async def home(request: Request):
-#     return RedirectResponse(url="/login")
-#
-# @app.get("/login", response_class=HTMLResponse, name="login_page")
-# async def login_page(request: Request):
-#     return templates.TemplateResponse("login.html", {"request": request})
-#
-# @app.get("/register", response_class=HTMLResponse, name="register_page")
-# async def register_page(request: Request):
-#     return templates.TemplateResponse("register.html", {"request": request})
-#
-# @app.post("/register", response_class=HTMLResponse, name="register")
-# async def register_user(
-#     request: Request,
-#     username: str = Form(...),
-#     password: str = Form(...),
-#     user_type: str = Form(...),
-# ):
-#     if user_type == "creator":
-#         await register_creator(username=username, password=password)
-#     elif user_type == "consumer":
-#         await register_consumer(username=username, password=password)
-#     else:
-#         return templates.TemplateResponse(
-#             "register.html", {"request": request, "error": "Invalid user type"}
-#         )
-#     return RedirectResponse(url="/login", status_code=302)
-#
-#
-# @app.get("/timeline", response_class=HTMLResponse, name="consumer_timeline")
-# async def consumer_timeline(request: Request):
-#     return templates.TemplateResponse("timeline.html", {"request": request})
