@@ -5,7 +5,7 @@ from datetime import datetime
 import cloudinary
 import cloudinary.uploader
 from config import db
-from utils.helpers import serialize_video
+from utils.helpers import serialize_video, serialize_comment
 
 # Cloudinary Configuration
 cloudinary.config(
@@ -207,5 +207,9 @@ async def get_video_comments(video_id: str):
     video = db.videos.find_one({"_id": ObjectId(video_id)})
     if not video:
         raise HTTPException(status_code=404, detail="Video not found")
-    comments = db.comments.find({"video_id": ObjectId(video_id)})
-    return list(comments)
+
+    # Fetch comments and serialize them before returning
+    comments_cursor = db.comments.find({"video_id": ObjectId(video_id)})
+    comments = [serialize_comment(comment) for comment in comments_cursor]
+
+    return comments
