@@ -1,3 +1,4 @@
+from config import db
 from routes.auth import router as auth_router
 from routes.videos import router as video_router
 from fastapi import FastAPI, Request, Form, Depends
@@ -8,6 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from routes.auth import login, register_creator, register_consumer
 
 app = FastAPI()
+
 
 # Set up templates
 templates = Jinja2Templates(directory="templates")  # Place the HTML files in a `templates` directory.

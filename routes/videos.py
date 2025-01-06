@@ -104,10 +104,10 @@ async def comment_on_video(video_id: str, content: str = Form(...), user_id: str
     }
 
 
-@router.get("/videos/search")
-async def search_videos(query: str):
-    videos = db.videos.find({"$text": {"$search": query}})
-    return [serialize_video(video) for video in videos]
+# @router.get("/videos/search")
+# async def search_videos(query: str):
+#     videos = db.videos.find({"$text": {"$search": query}})
+#     return [serialize_video(video) for video in videos]
 
 
 @router.get("/videos/creator/{creator_id}")
