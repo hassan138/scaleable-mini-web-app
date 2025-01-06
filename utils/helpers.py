@@ -41,6 +41,7 @@ def serialize_user(user):
         "id": str(user["_id"]),
         "username": user["username"],
         "is_creator": user["is_creator"],
+        "is_admin": user.get("is_admin", ""),
     }
 
 
