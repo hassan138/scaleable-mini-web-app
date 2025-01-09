@@ -11,12 +11,13 @@ class User(BaseModel):
     username: str
     hashed_password: str
     is_creator: bool
-    is_admin:bool
+    is_admin:bool = False
 
     class Config:
         allow_population_by_field_name = True
         arbitrary_types_allowed = True
         json_encoders = {ObjectId: str}
+        orm = True
 
     @validator("id", pre=True, always=True)
     def validate_id(cls, value):

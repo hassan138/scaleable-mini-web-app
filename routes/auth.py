@@ -213,7 +213,7 @@ async def delete_user(user_id: str, token: str = Depends(oauth2_scheme)):
         raise HTTPException(status_code=403, detail="You do not have permission to delete users")
 
     # Fetch the user to be deleted
-    user_to_delete = db.users.find_one({"_id": ObjectId(user_id)})
+    user_to_delete = db.users.findx_one({"_id": ObjectId(user_id)})
     if not user_to_delete:
         raise HTTPException(status_code=404, detail="User not found")
 
