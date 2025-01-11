@@ -1,7 +1,4 @@
-from bson import ObjectId
-from fastapi import HTTPException
-from pydantic import BaseModel, validator, root_validator
-from typing import Any, Optional
+from typing import Any
 from bson import ObjectId
 from config import db
 from pydantic.json_schema import JsonSchemaValue

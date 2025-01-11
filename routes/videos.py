@@ -9,11 +9,12 @@ from utils.helpers import serialize_video, serialize_comment
 
 # Cloudinary Configuration
 cloudinary.config(
-    cloud_name="dptixq5pl",
-    api_key="531695646727655",
-    api_secret="f7xfdft7c63RlYGG9nEtKUUl7dI",
+    cloud_name="dsm00evao",
+    api_key="122745312667257",
+    api_secret="2OMfGbwpwjgq-90DFs9a7fHzVo0",
     secure=False
 )
+
 # Router initialization
 router = APIRouter()
 
@@ -141,6 +142,7 @@ async def get_creator_videos(creator_id: str):
         return response
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
 
 @router.put("/video/{video_id}")
 async def update_video(

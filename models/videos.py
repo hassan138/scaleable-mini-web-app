@@ -1,13 +1,12 @@
-from bson import ObjectId
-from typing import List, Optional
-from datetime import datetime
-from pydantic import BaseModel, Field, validator
-from utils.helpers import PyObjectId
+from pydantic import validator
+
 from pydantic import BaseModel, Field
 from typing import List, Optional
 from datetime import datetime
 from utils.helpers import PyObjectId
 from bson import ObjectId
+
+
 # Video model
 
 class Video(BaseModel):
